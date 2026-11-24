@@ -355,6 +355,44 @@ function renderSummary(list, total) {
     barsCard('By mode', groupBy(list, 'mode'), total);
 }
 
+// ---------- Export ----------
+const IN_APK = /; wv\)/.test(navigator.userAgent);
+
+function toCsv(rows) {
+  const cols = [['Date', 'date'], ['Amount', 'amount'], ['Summary', 'summary'], ['Mode', 'mode'],
+    ['Account', 'account'], ['Expense Type', 'expenseType'], ['Sub Category', 'subCategory'],
+    ['Frequency', 'frequency'], ['ID', 'id']];
+  const cell = v => { v = String(v ?? ''); return /[",\n\r]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v; };
+  return [cols.map(c => c[0]).join(','), ...rows.map(t => cols.map(c => cell(t[c[1]])).join(','))].join('\r\n');
+}
+
+async function exportTx(scope) {
+  if (!configured()) { toast('Set up the app first'); return; }
+  const month = scope === 'month' ? state.month : '';
+  if (IN_APK) {
+    // The Android app hands this link to the browser, which downloads the CSV file.
+    const qs = new URLSearchParams({ action: 'export', month, token: state.config.token });
+    location.href = `${state.config.apiUrl}?${qs}`;
+    toast('Downloading in your browser');
+    return;
+  }
+  try {
+    toast('Preparing export…');
+    const rows = await api('list', { month });
+    const blob = new Blob([toCsv(rows)], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `expenses-${month || 'all'}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    toast(`Exported ${rows.length} transactions`);
+  } catch (e) {
+    toast(`Export failed: ${e.message}`);
+  }
+}
+
 // ---------- Navigation ----------
 const TITLES = { add: 'Add expense', history: 'History', summary: 'Summary', settings: 'Settings' };
 function showView(name) {
@@ -414,6 +452,13 @@ function init() {
     if (row && !row.disabled) openEdit(row.dataset.id);
   });
   $('#search').addEventListener('input', () => renderHistory(monthTx()));
+  $('#exportBtn').addEventListener('click', () => $('#exportDialog').showModal());
+  $('#exportDialog').addEventListener('click', e => {
+    const which = e.target.closest('[data-export]')?.dataset.export;
+    if (!which) return;
+    $('#exportDialog').close();
+    if (which !== 'cancel') exportTx(which);
+  });
   window.addEventListener('online', flushQueue);
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') { flushQueue(); loadMonth(false); }

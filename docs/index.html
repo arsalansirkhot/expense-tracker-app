@@ -32,7 +32,10 @@
         <div class="month-label"><span class="hist-month"></span><strong class="hist-total"></strong></div>
         <button class="icon-btn" data-month="1" aria-label="Next month">›</button>
       </div>
-      <input id="search" class="search" type="search" placeholder="Search this month">
+      <div class="search-row">
+        <input id="search" class="search" type="search" placeholder="Search this month">
+        <button id="exportBtn" class="secondary" type="button">Export</button>
+      </div>
       <div id="historyList" class="list"></div>
     </section>
 
@@ -66,6 +69,16 @@
 
   <dialog id="editDialog">
     <form id="editForm" class="form" method="dialog" autocomplete="off"></form>
+  </dialog>
+
+  <dialog id="exportDialog">
+    <div class="form">
+      <h2 style="margin:0">Export to CSV</h2>
+      <p class="hint">Opens in Excel, Google Sheets or any spreadsheet app.</p>
+      <button class="primary" type="button" data-export="month">This month (<span class="hist-month"></span>)</button>
+      <button class="secondary" type="button" data-export="all">All transactions</button>
+      <button class="secondary" type="button" data-export="cancel">Cancel</button>
+    </div>
   </dialog>
 
   <div id="toast" class="toast" role="status"></div>

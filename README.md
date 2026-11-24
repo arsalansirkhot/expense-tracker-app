@@ -46,5 +46,6 @@ You can also skip the APK and use the web app directly in Chrome (menu > **Add t
 ## Notes
 
 - The APK signing key (`android/app/release.keystore`) is committed so every build installs over the previous one. Fine for a personal sideloaded app; don't publish this APK to a store.
+- Export: History tab > **Export** > this month or all. In the Android app the CSV downloads through your browser (check Downloads).
 - Offline: adds made without signal are saved on the phone and synced when back online.
 - Sharing with someone else: they need their own copy of the Sheet and their own Apps Script deployment; the same APK works, they just enter their own URL and token.

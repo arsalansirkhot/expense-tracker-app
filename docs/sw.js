@@ -1,5 +1,5 @@
 // Network-first for app files so updates show up on next open; falls back to cache offline.
-const CACHE = 'expenses-v1';
+const CACHE = 'expenses-v2';
 const SHELL = ['./', 'index.html', 'app.css', 'app.js', 'manifest.webmanifest', 'icons/icon-192.png'];
 
 self.addEventListener('install', e => {

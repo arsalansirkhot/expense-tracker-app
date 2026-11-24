@@ -40,6 +40,7 @@ function handle_(req) {
       case 'add': return json_({ ok: true, data: withLock_(function () { return addTransaction_(parseData_(req.data)); }) });
       case 'update': return json_({ ok: true, data: withLock_(function () { return updateTransaction_(parseData_(req.data)); }) });
       case 'delete': return json_({ ok: true, data: withLock_(function () { return deleteTransaction_(req.id); }) });
+      case 'export': return exportCsv_(req.month);
       case 'ping': return json_({ ok: true, data: 'pong' });
       default: return json_({ ok: false, error: 'Unknown action: ' + req.action });
     }
@@ -288,6 +289,26 @@ function deleteTransaction_(id) {
   if (r < 0) throw new Error('Transaction not found');
   sh.deleteRow(r);
   return { id: id };
+}
+
+/** CSV download of transactions; month 'yyyy-MM' or empty for all. */
+function exportCsv_(month) {
+  var rows = listTransactions_(month);
+  var cols = [['Date', 'date'], ['Amount', 'amount'], ['Summary', 'summary'], ['Mode', 'mode'],
+    ['Account', 'account'], ['Expense Type', 'expenseType'], ['Sub Category', 'subCategory'],
+    ['Frequency', 'frequency'], ['ID', 'id']];
+  function cell(v) {
+    v = String(v == null ? '' : v);
+    return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }
+  var lines = [cols.map(function (c) { return c[0]; }).join(',')];
+  rows.forEach(function (t) {
+    lines.push(cols.map(function (c) { return cell(t[c[1]]); }).join(','));
+  });
+  var name = 'expenses-' + (month || 'all') + '.csv';
+  return ContentService.createTextOutput(lines.join('\r\n'))
+    .setMimeType(ContentService.MimeType.CSV)
+    .downloadAsFile(name);
 }
 
 // ---------- Optional: recurring expenses ----------
