@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <title>Expenses</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1 id="title">Add expense</h1>
+    <span id="sync" class="sync" hidden></span>
+    <button id="settingsBtn" class="icon-btn" aria-label="Settings">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6-2-3.5-2.5 1a7.4 7.4 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.4 7.4 0 0 0-1.7 1l-2.5-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6 2 3.5 2.5-1c.5.4 1.1.7 1.7 1L11 21h4l.4-2.9c.6-.3 1.2-.6 1.7-1l2.5 1 2-3.5zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" transform="translate(-1 0)"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <!-- Add -->
+    <section id="view-add" class="view active">
+      <form id="addForm" class="form" autocomplete="off"></form>
+    </section>
+
+    <!-- History -->
+    <section id="view-history" class="view">
+      <div class="month-bar">
+        <button class="icon-btn" data-month="-1" aria-label="Previous month">‹</button>
+        <div class="month-label"><span class="hist-month"></span><strong class="hist-total"></strong></div>
+        <button class="icon-btn" data-month="1" aria-label="Next month">›</button>
+      </div>
+      <input id="search" class="search" type="search" placeholder="Search this month">
+      <div id="historyList" class="list"></div>
+    </section>
+
+    <!-- Summary -->
+    <section id="view-summary" class="view">
+      <div class="month-bar">
+        <button class="icon-btn" data-month="-1" aria-label="Previous month">‹</button>
+        <div class="month-label"><span class="hist-month"></span><strong class="hist-total"></strong></div>
+        <button class="icon-btn" data-month="1" aria-label="Next month">›</button>
+      </div>
+      <div id="summaryBody"></div>
+    </section>
+
+    <!-- Settings -->
+    <section id="view-settings" class="view">
+      <form id="settingsForm" class="form">
+        <p class="hint">Paste the Web app URL and API token from your Apps Script setup. They are stored only on this phone.</p>
+        <label>Web app URL<input name="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" required></label>
+        <label>API token<input name="token" type="password" required></label>
+        <button class="primary" type="submit">Save and test</button>
+        <p id="settingsMsg" class="hint"></p>
+      </form>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button data-view="add" class="active"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>Add</button>
+    <button data-view="history"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg>History</button>
+    <button data-view="summary"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M11 3v10h10A10 10 0 1 1 11 3zm2 0a8 8 0 0 1 8 8h-8z"/></svg>Summary</button>
+  </nav>
+
+  <dialog id="editDialog">
+    <form id="editForm" class="form" method="dialog" autocomplete="off"></form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
